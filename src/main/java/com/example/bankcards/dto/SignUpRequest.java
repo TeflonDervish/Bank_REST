@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @Schema(description = "Запрос на регистрацию")
-public class SignUpRequest {
+public class SignUpRequest implements Serializable {
 
     @Schema(description = "Имя пользователя", example = "Вячеслав")
     @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")

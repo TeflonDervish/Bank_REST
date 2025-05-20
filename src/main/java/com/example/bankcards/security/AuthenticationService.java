@@ -3,7 +3,7 @@ package com.example.bankcards.security;
 import com.example.bankcards.dto.JwtAuthenticationResponse;
 import com.example.bankcards.dto.SignInRequest;
 import com.example.bankcards.dto.SignUpRequest;
-import com.example.bankcards.entity.Role;
+import com.example.bankcards.enums.Role;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.entity.User;
 import lombok.RequiredArgsConstructor;

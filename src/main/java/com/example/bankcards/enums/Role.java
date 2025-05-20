@@ -1,4 +1,4 @@
-package com.example.bankcards.entity;
+package com.example.bankcards.enums;
 
 public enum Role {
     ADMIN,
