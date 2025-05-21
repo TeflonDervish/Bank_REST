@@ -4,7 +4,6 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.enums.CardStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.time.LocalDate;

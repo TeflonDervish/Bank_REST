@@ -6,6 +6,7 @@ import com.example.bankcards.enums.Role;
 import com.example.bankcards.exception.UserNotFoundException;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -32,18 +33,21 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("Пользователя с такими именем не существует"));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto deleteUser(String username) {
         User user = getByUsername(username);
         userRepository.delete(user);
         return new UserDto(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto makeAdmin(String username) {
         User user = getByUsername(username);
         user.setRole(Role.ADMIN);
         return new UserDto(save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserDto takeAwayAdmin(String username) {
         User user = getByUsername(username);
         user.setRole(Role.USER);

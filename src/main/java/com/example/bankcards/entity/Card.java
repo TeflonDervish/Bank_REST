@@ -9,10 +9,10 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "cards")
 public class Card {
     @Id

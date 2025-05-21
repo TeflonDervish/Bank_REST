@@ -16,11 +16,11 @@ public class DataInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         if (!userService.existsByUsername("admin")) {
             User admin = User.builder()
                     .username("admin")
-                    .password(passwordEncoder.encode("admin"))
+                    .password(passwordEncoder.encode("admin123"))
                     .role(Role.ADMIN)
                     .build();
             userService.save(admin);

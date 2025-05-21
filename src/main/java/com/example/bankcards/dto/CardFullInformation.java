@@ -1,7 +1,6 @@
 package com.example.bankcards.dto;
 
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.CardStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -21,7 +20,7 @@ public class CardFullInformation implements Serializable {
         this.cardNumber = card.getCardNumber();
         this.expirationDate = card.getExpirationDate();
         this.cardStatus = card.getCardStatus();
-        this.user = card.getUser();
+        this.user = new UserDto(card.getUser());
         this.balance = card.getBalance();
     }
 
@@ -29,7 +28,7 @@ public class CardFullInformation implements Serializable {
     private LocalDate expirationDate;
     private CardStatus cardStatus;
 
-    private User user;
+    private UserDto user;
     private BigDecimal balance;
 
 }

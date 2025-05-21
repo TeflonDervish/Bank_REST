@@ -2,6 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.CardBriefInformation;
 import com.example.bankcards.dto.CardFullInformation;
+import com.example.bankcards.dto.ChangeAmountDto;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.CardStatus;
@@ -9,11 +10,13 @@ import com.example.bankcards.enums.Role;
 import com.example.bankcards.exception.CardAccessException;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.CardStatusException;
+import com.example.bankcards.exception.TransferException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.util.CardNumberGenerate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,7 @@ public class CardService {
         Card card = cardRepository.findByCardNumber(cardNumber)
                 .orElseThrow(() -> new CardNotFoundException("Карты с таким номером не существует"));
         User user = userService.getCurrentUser();
+
         if (user.getRole().equals(Role.ADMIN))
             return card;
 
@@ -47,12 +51,10 @@ public class CardService {
         if (card.getCardStatus().equals(CardStatus.EXPIRED))
             throw new CardStatusException("Карта просрочена");
 
-        if (card.getUser().getId().equals(user.getId()))
-            return card;
-        else
-            throw new CardAccessException("У вас нет доступа к этой карте");
+        return card;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public CardFullInformation createCard(String username) {
         User user = userService.getByUsername(username);
@@ -65,6 +67,7 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public CardFullInformation activateCard(String cardNumber) {
         Card card = getByCardNumber(cardNumber);
         card.setCardStatus(CardStatus.ACTIVE);
@@ -72,6 +75,7 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public CardFullInformation blockCard(String cardNumber) {
         Card card = getByCardNumber(cardNumber);
         card.setCardStatus(CardStatus.BLOCKED);
@@ -79,6 +83,7 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public CardFullInformation deleteCard(String cardNumber) {
         Card card = getByCardNumber(cardNumber);
         cardRepository.delete(card);
@@ -86,11 +91,12 @@ public class CardService {
     }
 
     public Page<CardBriefInformation> getUsersCard(String username, Pageable pageable) {
-        User user =  userService.getByUsername(username);
+        User user = userService.getByUsername(username);
         return cardRepository.findByUser(user, pageable)
                 .map(CardBriefInformation::new);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<CardBriefInformation> getAllCards(Pageable pageable) throws AccessDeniedException {
         if (!userService.getCurrentUser().getRole().equals(Role.ADMIN))
             throw new AccessDeniedException("У вас нет доступа к этой опреации");
@@ -99,20 +105,34 @@ public class CardService {
     }
 
     public BigDecimal getCardBalance(String cardNumber) {
+        User user = userService.getCurrentUser();
+        Card card = getByCardNumber(cardNumber);
+
+        if (!(user.getRole().equals(Role.ADMIN) || card.getUser().equals(user)))
+            throw new CardAccessException("У вас нет доступа к этой карте");
+
         return getByCardNumber(cardNumber)
                 .getBalance();
     }
 
     @Transactional
-    public void cardToCardTransfer(String cardNumberFrom, String cardNumberTo, BigDecimal amount) {
-        Card cardFrom = getByCardNumber(cardNumberFrom);
-        Card cardTo = getByCardNumber(cardNumberTo);
-        cardFrom.changeBalance(amount.negate());
-        cardFrom.changeBalance(amount);
+    public void cardToCardTransfer(ChangeAmountDto changeAmountDto) {
+        Card cardFrom = getByCardNumber(changeAmountDto.getCardNumberFrom());
+        Card cardTo = getByCardNumber(changeAmountDto.getCardNumberTo());
+        User user = userService.getCurrentUser();
+
+        if (!(cardFrom.getUser().equals(user) && cardTo.getUser().equals(user) || user.getRole().equals(Role.ADMIN)))
+            throw new CardAccessException("У вас нет доступа к этим картам");
+
+        if (!cardFrom.getUser().getId().equals(cardTo.getUser().getId()))
+            throw new TransferException("Можно переводить деньги только в рамках карт одного пользователя, " +
+                    "потому что так сказано в ТЗ)");
+
+        cardFrom.changeBalance(changeAmountDto.getAmount().negate());
+        cardFrom.changeBalance(changeAmountDto.getAmount());
         cardRepository.save(cardFrom);
         cardRepository.save(cardTo);
     }
-
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.bankcards.security;
 
+import com.example.bankcards.enums.Role;
 import com.example.bankcards.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,9 +37,13 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-resources/*",
-                                "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-resources/*",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html").permitAll()
+                        .requestMatchers(
+                                "/api/user/**").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
