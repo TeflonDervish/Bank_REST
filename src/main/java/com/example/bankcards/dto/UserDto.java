@@ -12,15 +12,14 @@ import lombok.Data;
 @Schema(description = "Информация о пользователе")
 public class UserDto {
 
+    @Schema(example = "Vyacheslav")
+    private String username;
+    @Schema(example = "USER")
+    private Role role;
+
     public UserDto(User user) {
         this.username = user.getUsername();
         this.role = user.getRole();
     }
-
-    @Schema(example = "Vyacheslav")
-    private String username;
-
-    @Schema(example = "USER")
-    private Role role;
 
 }

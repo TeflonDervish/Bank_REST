@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,6 +18,12 @@ import java.time.LocalDate;
 @Schema(description = "Полная информация о карте")
 public class CardFullInformation implements Serializable {
 
+    @Schema(example = "**** **** **** 1234")
+    private String cardNumber;
+    private LocalDate expirationDate;
+    private CardStatus cardStatus;
+    private UserDto user;
+    private BigDecimal balance;
     public CardFullInformation(Card card) {
         this.cardNumber = card.getCardNumber();
         this.expirationDate = card.getExpirationDate();
@@ -26,13 +31,5 @@ public class CardFullInformation implements Serializable {
         this.user = new UserDto(card.getUser());
         this.balance = card.getBalance();
     }
-
-    @Schema(example = "**** **** **** 1234")
-    private String cardNumber;
-    private LocalDate expirationDate;
-    private CardStatus cardStatus;
-
-    private UserDto user;
-    private BigDecimal balance;
 
 }

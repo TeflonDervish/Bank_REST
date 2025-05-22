@@ -3,11 +3,9 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.Role;
-import com.example.bankcards.exception.CardException;
 import com.example.bankcards.exception.UserException;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.Page;
@@ -107,7 +105,7 @@ public class UserService {
      * @return - информация о пользователе
      */
     public UserDto takeAwayAdmin(String username) {
-        log.info("Пользователь " + username + " лишился админских прав" );
+        log.info("Пользователь " + username + " лишился админских прав");
         User user = getByUsername(username);
         user.setRole(Role.USER);
         return new UserDto(save(user));

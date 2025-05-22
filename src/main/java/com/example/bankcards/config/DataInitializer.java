@@ -1,7 +1,7 @@
 package com.example.bankcards.config;
 
-import com.example.bankcards.enums.Role;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.enums.Role;
 import com.example.bankcards.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

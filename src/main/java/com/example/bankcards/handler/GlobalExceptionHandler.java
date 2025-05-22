@@ -29,9 +29,9 @@ public class GlobalExceptionHandler {
     /**
      * Обработка ошибок в случае неправильного ввода аргументов
      *
-     * @param e - сообщение об ошибке
+     * @param e       - сообщение об ошибке
      * @param request - запрос
-     * @param locale - информация о местонахождении
+     * @param locale  - информация о местонахождении
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,9 +62,9 @@ public class GlobalExceptionHandler {
     /**
      * Обработка ошибок связанных с работой с пользователями
      *
-     * @param e - сообщение об ошибке
+     * @param e       - сообщение об ошибке
      * @param request - запрос
-     * @param locale - информация о местонахождении
+     * @param locale  - информация о местонахождении
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(UserException.class)
@@ -89,9 +89,9 @@ public class GlobalExceptionHandler {
     /**
      * Обработка ошибок при работе с картами
      *
-     * @param e - сообщение об ошибке
+     * @param e       - сообщение об ошибке
      * @param request - запрос
-     * @param locale - информация о местонахождении
+     * @param locale  - информация о местонахождении
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(CardException.class)

@@ -10,8 +10,8 @@ spring:
 
     datasource:
         url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/bank_rest}
-        username: server
-        password: server
+        username: ${DATABASE_USERNAME:server}
+        password: ${DATABASE_PASSWORD:server}
         driver-class-name: org.postgresql.Driver
 
     jpa:
