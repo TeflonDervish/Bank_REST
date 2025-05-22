@@ -15,10 +15,10 @@ public class CardNumberGenerate {
     private final Random random = new Random();
 
     public String generateCardNumber() {
-        String startCardNumber = "1234 1234 1234 ";
-        String cardNumber = startCardNumber + String.valueOf(random.nextInt());
+        String startCardNumber = "1234 1234 1234 %04d";
+        String cardNumber = String.format(startCardNumber, random.nextInt(10000));
         while (cardRepository.existsByCardNumber(cardNumber)) {
-            cardNumber = startCardNumber + String.valueOf(random.nextInt());
+            cardNumber = String.format(startCardNumber, random.nextInt(10000));
         }
         return cardNumber;
     }

@@ -24,6 +24,7 @@ public class CardFullInformation implements Serializable {
         this.balance = card.getBalance();
     }
 
+    @Schema(example = "**** **** **** 1234")
     private String cardNumber;
     private LocalDate expirationDate;
     private CardStatus cardStatus;

@@ -8,6 +8,7 @@ import com.example.bankcards.entity.User;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -24,6 +26,7 @@ import java.nio.file.AccessDeniedException;
 @RestController
 @RequestMapping("/api/card")
 @Tag(name = "Работа с картами")
+@SecurityRequirement(name = "BearerAuth")
 public class CardController {
 
     private final CardService cardService;
@@ -32,7 +35,7 @@ public class CardController {
     @GetMapping("/get")
     @Operation(summary = "Получение карты по номеру")
     public ResponseEntity<CardFullInformation> getCardByCardNumber(
-            @RequestParam(name = "Номер карты") String cardNumber) {
+            @RequestParam(defaultValue = "1234 1234 1234 1234") String cardNumber) {
         Card card = cardService.getByCardNumber(cardNumber);
         return ResponseEntity.ok(new CardFullInformation(card));
     }
@@ -52,7 +55,7 @@ public class CardController {
     @PostMapping("/create")
     @Operation(summary = "Создание карты")
     public ResponseEntity<CardFullInformation> createCard(
-            @RequestParam(name = "Имя пользователя") String username) {
+            @RequestParam String username) {
         return ResponseEntity.ok(cardService.createCard(username));
     }
 
@@ -60,8 +63,7 @@ public class CardController {
     @Operation(summary = "Активация карты")
     public ResponseEntity<CardFullInformation> activateCard(
             @RequestParam(
-                    name = "Номер карты"
-                    , defaultValue = "1234 1234 1234 1234")
+                    defaultValue = "1234 1234 1234 1234")
             String cardName) {
         return ResponseEntity.ok(cardService.activateCard(cardName));
     }
@@ -70,18 +72,16 @@ public class CardController {
     @Operation(summary = "Блокировка карты")
     public ResponseEntity<CardFullInformation> blockCard(
             @RequestParam(
-                    name = "Номер карты"
-                    , defaultValue = "1234 1234 1234 1234")
+                    defaultValue = "1234 1234 1234 1234")
             String cardName) {
         return ResponseEntity.ok(cardService.blockCard(cardName));
     }
 
     @DeleteMapping("/delete")
-    @Operation(summary = "Блокировка карты")
+    @Operation(summary = "Удаление карты карты")
     public ResponseEntity<CardFullInformation> deleteCard(
             @RequestParam(
-                    name = "Номер карты"
-                    , defaultValue = "1234 1234 1234 1234")
+                    defaultValue = "1234 1234 1234 1234")
             String cardName) {
         return ResponseEntity.ok(cardService.deleteCard(cardName));
     }
@@ -107,11 +107,11 @@ public class CardController {
     @GetMapping("/balance")
     @Operation(summary = "Получение баланса карты")
     public ResponseEntity<BigDecimal> getBalance(
-            @RequestParam(name = "Номер карты", defaultValue = "1234 1234 1234 1234") String cardNumber) {
+            @RequestParam(defaultValue = "1234 1234 1234 1234") String cardNumber) {
         return ResponseEntity.ok(cardService.getCardBalance(cardNumber));
     }
 
-    @PostMapping
+    @PostMapping("/transfer")
     @Operation(summary = "Перевод денег с карты")
     public ResponseEntity<Void> transfer(
             @RequestBody @Valid ChangeAmountDto transfer) {

@@ -38,7 +38,7 @@ public class Card {
     private BigDecimal balance;
 
     public String getCardNumber() {
-        return "**** **** **** " + cardNumber.substring(16);
+        return "**** **** **** " + cardNumber.substring(15);
     }
 
     public void changeBalance(BigDecimal balance) {

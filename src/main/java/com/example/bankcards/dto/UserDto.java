@@ -14,7 +14,10 @@ public class UserDto {
         this.role = user.getRole();
     }
 
+    @Schema(example = "Vyacheslav")
     private String username;
+
+    @Schema(example = "USER")
     private Role role;
 
 }
