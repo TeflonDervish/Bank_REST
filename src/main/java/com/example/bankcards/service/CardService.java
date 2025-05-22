@@ -35,29 +35,38 @@ public class CardService {
     private final CardNumberGenerate cardNumberGenerate;
 
     public Card getByCardNumber(String cardNumber) {
+        log.info("Получение карты по номеру");
         Card card = cardRepository.findByCardNumber(cardNumber)
                 .orElseThrow(() -> new CardException("Карты с номером " + cardNumber + " не существует"));
         User user = userService.getCurrentUser();
 
-        if (user.getRole().equals(Role.ADMIN))
+        if (user.getRole().equals(Role.ADMIN)) {
+            log.info("Карта получена под админом");
             return card;
+        }
 
-        if (card.getCardStatus().equals(CardStatus.BLOCKED))
+        if (card.getCardStatus().equals(CardStatus.BLOCKED)) {
+            log.info("Попытка получить заблокированную карту");
             throw new CardException("Карта заблокирована");
+        }
 
         if (card.getExpirationDate().isBefore(LocalDate.now())) {
+            log.info("У карты вышел срок годности");
             card.setCardStatus(CardStatus.EXPIRED);
             cardRepository.save(card);
         }
 
-        if (card.getCardStatus().equals(CardStatus.EXPIRED))
+        if (card.getCardStatus().equals(CardStatus.EXPIRED)) {
+            log.info("Попытка получить просроченную карту");
             throw new CardException("Карта просрочена");
+        }
 
         return card;
     }
 
     @Transactional
     public CardFullInformation createCard(String username) {
+        log.info("Создание карты");
         User user = userService.getByUsername(username);
         Card card = Card.builder()
                 .cardNumber(cardNumberGenerate.generateCardNumber())
@@ -71,6 +80,7 @@ public class CardService {
     }
 
     public void isCanGetCardAccess(String cardNumber) {
+        log.info("Проверка доступа к карте");
         User user = userService.getCurrentUser();
         Card card = getByCardNumber(cardNumber);
         if (!((user.getRole().equals(Role.ADMIN)) || (card.getUser().getId().equals(user.getId()))))
@@ -78,6 +88,7 @@ public class CardService {
     }
 
     public CardFullInformation activateCard(String cardNumber) {
+        log.info("Карты активирована");
         Card card = getByCardNumber(cardNumber);
         card.setCardStatus(CardStatus.ACTIVE);
         cardRepository.save(card);
@@ -85,6 +96,7 @@ public class CardService {
     }
 
     public CardFullInformation blockCard(String cardNumber) {
+        log.info("Карта заблокирована");
         Card card = getByCardNumber(cardNumber);
         card.setCardStatus(CardStatus.BLOCKED);
         cardRepository.save(card);
@@ -92,23 +104,27 @@ public class CardService {
     }
 
     public CardFullInformation deleteCard(String cardNumber) {
+        log.info("Карта удалена");
         Card card = getByCardNumber(cardNumber);
         cardRepository.delete(card);
         return new CardFullInformation(card);
     }
 
     public Page<CardBriefInformation> getUsersCard(String username, Pageable pageable) {
+        log.info("Получен список карта пользователя " + username);
         User user = userService.getByUsername(username);
         return cardRepository.findByUser(user, pageable)
                 .map(CardBriefInformation::new);
     }
 
     public Page<CardBriefInformation> getAllCards(Pageable pageable) throws AccessDeniedException {
+        log.info("Получение всех карт");
         return cardRepository.findAll(pageable)
                 .map(CardBriefInformation::new);
     }
 
     public BigDecimal getCardBalance(String cardNumber) {
+        log.info("Получение баланса карты");
         isCanGetCardAccess(cardNumber);
         return getByCardNumber(cardNumber)
                 .getBalance();

@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @Operation(summary = "Удалить пользователя")
-    @PostMapping("/delete-user")
+    @DeleteMapping("/delete-user")
     public ResponseEntity<UserDto> deleteUser(
             @RequestParam String username
     ) {

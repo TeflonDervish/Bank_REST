@@ -8,17 +8,19 @@ import com.example.bankcards.exception.UserException;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final Log log = LogFactory.getLog(UserService.class);
     private final UserRepository userRepository;
 
     public User save(User user) {
@@ -26,6 +28,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        log.info("Создание пользователя");
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new UserException("Пользователь с таким именем уже существует");
         }
@@ -33,6 +36,7 @@ public class UserService {
     }
 
     public User getByUsername(String username) {
+        log.info("Получение пользователя " + username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException("Пользователя с такими именем не существует"));
     }
@@ -44,18 +48,21 @@ public class UserService {
     }
 
     public UserDto deleteUser(String username) {
+        log.info("Удаление пользователя" + username);
         User user = getByUsername(username);
         userRepository.delete(user);
         return new UserDto(user);
     }
 
     public UserDto makeAdmin(String username) {
+        log.info("Пользователь " + username + " получил админские права");
         User user = getByUsername(username);
         user.setRole(Role.ADMIN);
         return new UserDto(save(user));
     }
 
     public UserDto takeAwayAdmin(String username) {
+        log.info("Пользователь " + username + " лишился админских прав" );
         User user = getByUsername(username);
         user.setRole(Role.USER);
         return new UserDto(save(user));
@@ -66,6 +73,7 @@ public class UserService {
     }
 
     public User getCurrentUser() {
+        log.info("Получение информации о текущем пользователе");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
     }
