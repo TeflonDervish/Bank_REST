@@ -1,4 +1,4 @@
-package com.example.bankcards.controller;
+package com.example.bankcards.handler;
 
 
 import com.example.bankcards.dto.ErrorResponse;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -27,7 +26,7 @@ public class GlobalExceptionHandler {
     /**
      * Обработка ошибок в случае неправильного ввода аргументов
      *
-     * @param e
+     * @param e - сообщение об ошибке
      * @param request
      * @param locale
      * @return
@@ -95,25 +94,6 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Ошибка при работе с картой",
-                request.getDescription(false).replace("uri=", ""),
-                errors
-        );
-
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
-            AccessDeniedException e,
-            WebRequest request,
-            Locale locale) {
-        log.warn("Отказано в доступе {}", e.getMessage());
-
-        Map<String, String> errors = getExceptionInfo(e);
-
-        ErrorResponse response = new ErrorResponse(
-                HttpStatus.BAD_REQUEST,
-                "Отказано в доступе",
                 request.getDescription(false).replace("uri=", ""),
                 errors
         );

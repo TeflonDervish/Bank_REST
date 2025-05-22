@@ -11,6 +11,8 @@ import com.example.bankcards.exception.CardException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.util.CardNumberGenerate;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
 public class CardService {
 
     private static final Integer CARD_EXPIRATION = 5;
+    private static final Log log = LogFactory.getLog(CardService.class);
 
     private final CardRepository cardRepository;
     private final UserService userService;
@@ -33,7 +36,7 @@ public class CardService {
 
     public Card getByCardNumber(String cardNumber) {
         Card card = cardRepository.findByCardNumber(cardNumber)
-                .orElseThrow(() -> new CardException("Карты с таким номером не существует"));
+                .orElseThrow(() -> new CardException("Карты с номером " + cardNumber + " не существует"));
         User user = userService.getCurrentUser();
 
         if (user.getRole().equals(Role.ADMIN))
@@ -42,8 +45,10 @@ public class CardService {
         if (card.getCardStatus().equals(CardStatus.BLOCKED))
             throw new CardException("Карта заблокирована");
 
-        if (card.getExpirationDate().isAfter(LocalDate.now()))
+        if (card.getExpirationDate().isBefore(LocalDate.now())) {
             card.setCardStatus(CardStatus.EXPIRED);
+            cardRepository.save(card);
+        }
 
         if (card.getCardStatus().equals(CardStatus.EXPIRED))
             throw new CardException("Карта просрочена");
@@ -63,6 +68,13 @@ public class CardService {
                 .build();
         cardRepository.save(card);
         return new CardFullInformation(card);
+    }
+
+    public void isCanGetCardAccess(String cardNumber) {
+        User user = userService.getCurrentUser();
+        Card card = getByCardNumber(cardNumber);
+        if (!((user.getRole().equals(Role.ADMIN)) || (card.getUser().getId().equals(user.getId()))))
+            throw new CardException("У вас нет доступа к этой карте");
     }
 
     public CardFullInformation activateCard(String cardNumber) {
@@ -92,33 +104,24 @@ public class CardService {
     }
 
     public Page<CardBriefInformation> getAllCards(Pageable pageable) throws AccessDeniedException {
-        if (!userService.getCurrentUser().getRole().equals(Role.ADMIN))
-            throw new AccessDeniedException("У вас нет доступа к этой опреации");
         return cardRepository.findAll(pageable)
                 .map(CardBriefInformation::new);
     }
 
     public BigDecimal getCardBalance(String cardNumber) {
-        User user = userService.getCurrentUser();
-        Card card = getByCardNumber(cardNumber);
-
-        if (!(user.getRole().equals(Role.ADMIN) || card.getUser().equals(user)))
-            throw new CardException("У вас нет доступа к этой карте");
-
+        isCanGetCardAccess(cardNumber);
         return getByCardNumber(cardNumber)
                 .getBalance();
     }
 
     @Transactional
     public void cardToCardTransfer(ChangeAmountDto changeAmountDto) {
+        log.info("Перевод между картами");
         Card cardFrom = getByCardNumber(changeAmountDto.getCardNumberFrom());
         Card cardTo = getByCardNumber(changeAmountDto.getCardNumberTo());
-        User user = userService.getCurrentUser();
 
-        if (!(cardFrom.getUser().getId().equals(user.getId()) &&
-                cardTo.getUser().getId().equals(user.getId()) ||
-                user.getRole().equals(Role.ADMIN)))
-            throw new CardException("У вас нет доступа к этим картам");
+        isCanGetCardAccess(changeAmountDto.getCardNumberFrom());
+        isCanGetCardAccess(changeAmountDto.getCardNumberTo());
 
         if (!cardFrom.getUser().getId().equals(cardTo.getUser().getId()))
             throw new CardException("Можно переводить деньги только в рамках карт одного пользователя, " +
@@ -128,7 +131,7 @@ public class CardService {
             throw new CardException("На счете недостаточно средств");
 
         cardFrom.changeBalance(changeAmountDto.getAmount().negate());
-        cardFrom.changeBalance(changeAmountDto.getAmount());
+        cardTo.changeBalance(changeAmountDto.getAmount());
         cardRepository.save(cardFrom);
         cardRepository.save(cardTo);
     }

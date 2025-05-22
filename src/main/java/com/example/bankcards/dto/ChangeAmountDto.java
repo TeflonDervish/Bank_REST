@@ -25,7 +25,5 @@ public class ChangeAmountDto {
     private String cardNumberTo;
 
     @Schema(description = "Сумма перевода", defaultValue = "0")
-    @Size(min = 0, message = "Нельзя перевести меньше нуля")
-    @NotBlank(message = "Сумма перевода не может быть отрицательной")
     private BigDecimal amount;
 }

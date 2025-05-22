@@ -34,6 +34,7 @@ public class CardController {
 
     @GetMapping("/get")
     @Operation(summary = "Получение карты по номеру")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardFullInformation> getCardByCardNumber(
             @RequestParam(defaultValue = "1234 1234 1234 1234") String cardNumber) {
         Card card = cardService.getByCardNumber(cardNumber);
@@ -42,6 +43,7 @@ public class CardController {
 
     @GetMapping("/get-all")
     @Operation(summary = "Получение списка всех карт")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CardBriefInformation>> getAllCards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -54,6 +56,7 @@ public class CardController {
 
     @PostMapping("/create")
     @Operation(summary = "Создание карты")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardFullInformation> createCard(
             @RequestParam String username) {
         return ResponseEntity.ok(cardService.createCard(username));
@@ -61,6 +64,7 @@ public class CardController {
 
     @PostMapping("/activate")
     @Operation(summary = "Активация карты")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardFullInformation> activateCard(
             @RequestParam(
                     defaultValue = "1234 1234 1234 1234")
@@ -70,6 +74,7 @@ public class CardController {
 
     @PostMapping("/block")
     @Operation(summary = "Блокировка карты")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardFullInformation> blockCard(
             @RequestParam(
                     defaultValue = "1234 1234 1234 1234")
@@ -78,7 +83,8 @@ public class CardController {
     }
 
     @DeleteMapping("/delete")
-    @Operation(summary = "Удаление карты карты")
+    @Operation(summary = "Удаление карты")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CardFullInformation> deleteCard(
             @RequestParam(
                     defaultValue = "1234 1234 1234 1234")
@@ -97,6 +103,7 @@ public class CardController {
 
     @GetMapping("/get-user_card")
     @Operation(summary = "Получение списка карт пользователя")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CardBriefInformation>> getAllUserCard(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
