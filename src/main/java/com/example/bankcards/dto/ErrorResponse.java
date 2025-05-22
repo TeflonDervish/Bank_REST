@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Dto для перехвата ошибок, и представление информации
+ */
 @Data
 @RequiredArgsConstructor
 public class ErrorResponse {

@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * Dto для запроса на вход
+ */
 @Data
 @Schema(description = "Запрос на вход")
 public class SignInRequest implements Serializable {

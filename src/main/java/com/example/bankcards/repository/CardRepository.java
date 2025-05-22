@@ -9,6 +9,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
+/**
+ * Репозиторий для работы с картами
+ */
 public interface CardRepository extends CrudRepository<Card, Long> {
 
     Optional<Card> findByCardNumber(String cardNumber);

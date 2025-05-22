@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-
+/**
+ * DTO для перевода денег с одной карты на другую
+ */
 @Data
 @NoArgsConstructor
 @Schema(description = "Перевод с одной карты на другую")

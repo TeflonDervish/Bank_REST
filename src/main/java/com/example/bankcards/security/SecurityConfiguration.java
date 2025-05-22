@@ -22,6 +22,9 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Конфигурация безопасности
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity

@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Полная информация о карте
+ */
 @Data
 @NoArgsConstructor
 @Schema(description = "Полная информация о карте")

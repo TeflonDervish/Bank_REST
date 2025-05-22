@@ -19,6 +19,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Перехватчик пользовательских ошибок
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,9 +30,9 @@ public class GlobalExceptionHandler {
      * Обработка ошибок в случае неправильного ввода аргументов
      *
      * @param e - сообщение об ошибке
-     * @param request
-     * @param locale
-     * @return
+     * @param request - запрос
+     * @param locale - информация о местонахождении
+     * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
@@ -57,11 +60,12 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Обработка ошибок связанных с работой с пользователями
      *
-     * @param e
-     * @param request
-     * @param locale
-     * @return
+     * @param e - сообщение об ошибке
+     * @param request - запрос
+     * @param locale - информация о местонахождении
+     * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
@@ -82,6 +86,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Обработка ошибок при работе с картами
+     *
+     * @param e - сообщение об ошибке
+     * @param request - запрос
+     * @param locale - информация о местонахождении
+     * @return - возвращает информацию об ошибке
+     */
     @ExceptionHandler(CardException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
             CardException e,
@@ -102,6 +114,12 @@ public class GlobalExceptionHandler {
     }
 
 
+    /**
+     * Получение сообщения об ошибках
+     *
+     * @param e - сообщение об ошибке
+     * @return - возвращает сообщение об ошибках
+     */
     public Map<String, String> getExceptionInfo(Exception e) {
         return new HashMap<>() {{
             put("Сообщение об ошибке", e.getMessage());

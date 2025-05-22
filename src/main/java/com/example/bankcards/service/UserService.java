@@ -16,6 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис для работы с данными пользователя
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -23,10 +26,22 @@ public class UserService {
     private static final Log log = LogFactory.getLog(UserService.class);
     private final UserRepository userRepository;
 
+    /**
+     * Сохранение пользователя
+     *
+     * @param user - данные пользователя
+     * @return - возвращает информацию о пользователе
+     */
     public User save(User user) {
         return userRepository.save(user);
     }
 
+    /**
+     * Создание пользователя
+     *
+     * @param user - данные пользователя
+     * @return - информация о пользователе
+     */
     public User createUser(User user) {
         log.info("Создание пользователя");
         if (userRepository.existsByUsername(user.getUsername())) {
@@ -35,18 +50,36 @@ public class UserService {
         return save(user);
     }
 
+    /**
+     * Получение пользователя
+     *
+     * @param username - имя пользователя
+     * @return - информация о пользователе
+     */
     public User getByUsername(String username) {
         log.info("Получение пользователя " + username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException("Пользователя с такими именем не существует"));
     }
 
+    /**
+     * Получение списка всех пользователей
+     *
+     * @param pageable - пагинация
+     * @return - список с информацией о пользователях
+     */
     public Page<UserDto> getAll(Pageable pageable) {
         log.info("Получение информации о всех пользователях");
         return userRepository.findAll(pageable)
                 .map(UserDto::new);
     }
 
+    /**
+     * Удаление пользователя
+     *
+     * @param username - имя пользователя
+     * @return - информация о пользователе
+     */
     public UserDto deleteUser(String username) {
         log.info("Удаление пользователя" + username);
         User user = getByUsername(username);
@@ -54,6 +87,12 @@ public class UserService {
         return new UserDto(user);
     }
 
+    /**
+     * Выдача админских прав
+     *
+     * @param username - имя пользователя
+     * @return - информация о пользователе
+     */
     public UserDto makeAdmin(String username) {
         log.info("Пользователь " + username + " получил админские права");
         User user = getByUsername(username);
@@ -61,6 +100,12 @@ public class UserService {
         return new UserDto(save(user));
     }
 
+    /**
+     * Лишение админских прав
+     *
+     * @param username - имя пользователя
+     * @return - информация о пользователе
+     */
     public UserDto takeAwayAdmin(String username) {
         log.info("Пользователь " + username + " лишился админских прав" );
         User user = getByUsername(username);
@@ -68,16 +113,32 @@ public class UserService {
         return new UserDto(save(user));
     }
 
+    /**
+     * Метод loadByUsername для работы сервиса
+     *
+     * @return - возвращает UserDetailsService
+     */
     public UserDetailsService userDetailsService() {
         return this::getByUsername;
     }
 
+    /**
+     * Получение информации о текущем пользователе
+     *
+     * @return - данные о пользователе
+     */
     public User getCurrentUser() {
         log.info("Получение информации о текущем пользователе");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
     }
 
+    /**
+     * Проверка пользователя на существование
+     *
+     * @param username - имя пользователя
+     * @return - существует или нет
+     */
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }

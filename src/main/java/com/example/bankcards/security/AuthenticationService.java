@@ -12,6 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис для аутентификации пользователей
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -21,6 +24,12 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
+    /**
+     * Запрос на регистрацию
+     *
+     * @param request - запрос на регистрацию
+     * @return - возвращает токен
+     */
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
         var user = User.builder()
@@ -35,6 +44,12 @@ public class AuthenticationService {
         return new JwtAuthenticationResponse(jwt);
     }
 
+    /**
+     * Запрос на вход
+     *
+     * @param request - запрос на вход
+     * @return - возвращает токен
+     */
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),

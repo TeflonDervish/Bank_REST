@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Сущность для работы с данными пользователя
+ */
 @Getter
 @Setter
 @Entity

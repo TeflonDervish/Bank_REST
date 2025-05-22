@@ -23,6 +23,9 @@ import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 
+/**
+ * Сервис для работы с данными карт
+ */
 @Service
 @RequiredArgsConstructor
 public class CardService {
@@ -34,6 +37,12 @@ public class CardService {
     private final UserService userService;
     private final CardNumberGenerate cardNumberGenerate;
 
+    /**
+     * Получение карты по номеру
+     *
+     * @param cardNumber - номер карты
+     * @return - возвращает карту
+     */
     public Card getByCardNumber(String cardNumber) {
         log.info("Получение карты по номеру");
         Card card = cardRepository.findByCardNumber(cardNumber)
@@ -64,6 +73,12 @@ public class CardService {
         return card;
     }
 
+    /**
+     * Создание карты
+     *
+     * @param username - имя пользователя
+     * @return - возвращает промежуточную информацию о карте
+     */
     @Transactional
     public CardFullInformation createCard(String username) {
         log.info("Создание карты");
@@ -79,6 +94,11 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    /**
+     * Проверка прав доступа пользователя
+     *
+     * @param cardNumber - номер карты
+     */
     public void isCanGetCardAccess(String cardNumber) {
         log.info("Проверка доступа к карте");
         User user = userService.getCurrentUser();
@@ -87,6 +107,12 @@ public class CardService {
             throw new CardException("У вас нет доступа к этой карте");
     }
 
+    /**
+     * Активация карты
+     *
+     * @param cardNumber - номер карты
+     * @return - возвращает подробную информацию о карте
+     */
     public CardFullInformation activateCard(String cardNumber) {
         log.info("Карты активирована");
         Card card = getByCardNumber(cardNumber);
@@ -95,6 +121,12 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    /**
+     * Блокировка карты
+     *
+     * @param cardNumber - номер карты
+     * @return - возвращает подробную информацию о карте
+     */
     public CardFullInformation blockCard(String cardNumber) {
         log.info("Карта заблокирована");
         Card card = getByCardNumber(cardNumber);
@@ -103,6 +135,12 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    /**
+     * Удаление карты
+     *
+     * @param cardNumber - номер карты
+     * @return - возвращает подробную информацию о карте
+     */
     public CardFullInformation deleteCard(String cardNumber) {
         log.info("Карта удалена");
         Card card = getByCardNumber(cardNumber);
@@ -110,6 +148,13 @@ public class CardService {
         return new CardFullInformation(card);
     }
 
+    /**
+     * Получение списка пользовательских карты
+     *
+     * @param username - имя пользователя
+     * @param pageable - пагинация
+     * @return - возвращает список с краткой информацией о карте
+     */
     public Page<CardBriefInformation> getUsersCard(String username, Pageable pageable) {
         log.info("Получен список карта пользователя " + username);
         User user = userService.getByUsername(username);
@@ -117,12 +162,24 @@ public class CardService {
                 .map(CardBriefInformation::new);
     }
 
-    public Page<CardBriefInformation> getAllCards(Pageable pageable) throws AccessDeniedException {
+    /**
+     * Получение списка всех карта
+     *
+     * @param pageable - пагинация
+     * @return - возвращает список с краткой информацией о картах
+     */
+    public Page<CardBriefInformation> getAllCards(Pageable pageable) {
         log.info("Получение всех карт");
         return cardRepository.findAll(pageable)
                 .map(CardBriefInformation::new);
     }
 
+    /**
+     * Получение баланса карты
+     *
+     * @param cardNumber - номер карты
+     * @return - баланс карты
+     */
     public BigDecimal getCardBalance(String cardNumber) {
         log.info("Получение баланса карты");
         isCanGetCardAccess(cardNumber);
@@ -130,6 +187,11 @@ public class CardService {
                 .getBalance();
     }
 
+    /**
+     * Перевод денег с одной карты на другую
+     *
+     * @param changeAmountDto - dto на изменение баланса
+     */
     @Transactional
     public void cardToCardTransfer(ChangeAmountDto changeAmountDto) {
         log.info("Перевод между картами");

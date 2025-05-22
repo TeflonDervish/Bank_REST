@@ -7,6 +7,9 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Сущность для работы с данными карты
+ */
 @Getter
 @Setter
 @Builder

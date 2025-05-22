@@ -5,6 +5,9 @@ import com.example.bankcards.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+/**
+ * Dto для выдачи информации о пользователе
+ */
 @Data
 @Schema(description = "Информация о пользователе")
 public class UserDto {

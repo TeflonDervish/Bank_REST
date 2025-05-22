@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 
+/**
+ * Краткая информация о карте
+ */
 @Data
 @Schema(description = "Информация о карте")
 public class CardBriefInformation implements Serializable {
