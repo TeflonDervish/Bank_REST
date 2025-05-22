@@ -1,13 +1,14 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.CardBriefInformation;
-import com.example.bankcards.dto.CardFullInformation;
-import com.example.bankcards.dto.ChangeAmountDto;
+import com.example.bankcards.dto.*;
+import com.example.bankcards.entity.BlockCardRequest;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.CardStatus;
 import com.example.bankcards.enums.Role;
+import com.example.bankcards.exception.BlockedRequestException;
 import com.example.bankcards.exception.CardException;
+import com.example.bankcards.repository.BlockCardRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.util.CardNumberGenerate;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class CardService {
     private static final Log log = LogFactory.getLog(CardService.class);
 
     private final CardRepository cardRepository;
+    private final BlockCardRequestRepository blockCardRequestRepository;
     private final UserService userService;
     private final CardNumberGenerate cardNumberGenerate;
 
@@ -125,10 +127,12 @@ public class CardService {
      * @param cardNumber - номер карты
      * @return - возвращает подробную информацию о карте
      */
+    @Transactional
     public CardFullInformation blockCard(String cardNumber) {
         log.info("Карта заблокирована");
         Card card = getByCardNumber(cardNumber);
         card.setCardStatus(CardStatus.BLOCKED);
+        deleteRequestByCardNumber(cardNumber);
         cardRepository.save(card);
         return new CardFullInformation(card);
     }
@@ -212,5 +216,47 @@ public class CardService {
         cardRepository.save(cardTo);
     }
 
+    /**
+     * Создание запроса на блокировку карты
+     *
+     * @param blockCardRequestDto - запрос на блокировку
+     * @return - возвращает информацию о запросе на блокировку
+     */
+    public BlockCardRequestInfo requestToBlockCard(BlockCardRequestDto blockCardRequestDto) {
+        log.info("Запрос на блокировку карты");
+        isCanGetCardAccess(blockCardRequestDto.getCardNumber());
+
+        if (blockCardRequestRepository.existsByCard_CardNumber(blockCardRequestDto.getCardNumber()))
+            throw new BlockedRequestException("Запрос на блокировку этой карты уже создан");
+
+        BlockCardRequest blockCardRequest = BlockCardRequest.builder()
+                .card(getByCardNumber(blockCardRequestDto.getCardNumber()))
+                .requester(userService.getCurrentUser())
+                .reason(blockCardRequestDto.getReason())
+                .build();
+        return new BlockCardRequestInfo(blockCardRequestRepository.save(blockCardRequest));
+    }
+
+    /**
+     * Получает список всех запросов на блокировку
+     *
+     * @param pageable - пагинация
+     * @return - список с запросами на блокировку
+     */
+    public Page<BlockCardRequestInfo> getAllRequests(Pageable pageable) {
+        return blockCardRequestRepository.findAll(pageable)
+                .map(BlockCardRequestInfo::new);
+    }
+
+    /**
+     * Удаление запроса на блокировку
+     *
+     * @param cardNumber - номер карты
+     */
+    public void deleteRequestByCardNumber(String cardNumber) {
+        BlockCardRequest blockCardRequest = blockCardRequestRepository.findByCard_CardNumber(cardNumber);
+        if (blockCardRequest != null)
+            blockCardRequestRepository.delete(blockCardRequest);
+    }
 
 }

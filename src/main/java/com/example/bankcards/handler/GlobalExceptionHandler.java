@@ -2,6 +2,7 @@ package com.example.bankcards.handler;
 
 
 import com.example.bankcards.dto.ErrorResponse;
+import com.example.bankcards.exception.BlockedRequestException;
 import com.example.bankcards.exception.CardException;
 import com.example.bankcards.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
@@ -113,6 +114,32 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Обработка ошибок при запросах на блокировку карты
+     *
+     * @param e       - сообщение об ошибке
+     * @param request - запрос
+     * @param locale  - информация о местонахождении
+     * @return - возвращает информацию об ошибке
+     */
+    @ExceptionHandler(BlockedRequestException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
+            BlockedRequestException e,
+            WebRequest request,
+            Locale locale) {
+        log.warn("Ошибка при запросе на блокировку карты {}", e.getMessage());
+
+        Map<String, String> errors = getExceptionInfo(e);
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Ошибка при запросе на блокировку карты",
+                request.getDescription(false).replace("uri=", ""),
+                errors
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     /**
      * Получение сообщения об ошибках

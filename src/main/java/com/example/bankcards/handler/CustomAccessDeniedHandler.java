@@ -35,7 +35,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         User user = userService.getCurrentUser();
 
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpServletResponse.SC_FORBIDDEN);
         errorResponse.put("error", "Forbidden");
         errorResponse.put("message", "You don't have permission to access this resource");

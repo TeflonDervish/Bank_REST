@@ -1,8 +1,6 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.CardBriefInformation;
-import com.example.bankcards.dto.CardFullInformation;
-import com.example.bankcards.dto.ChangeAmountDto;
+import com.example.bankcards.dto.*;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.CardService;
@@ -186,6 +184,37 @@ public class CardController {
             @RequestBody @Valid ChangeAmountDto transfer) {
         cardService.cardToCardTransfer(transfer);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Запрос на блокировку карты
+     *
+     * @param blockCardRequestDto - dto для создания запроса
+     * @return - результат ответа
+     */
+    @PostMapping("/request-to-block")
+    @Operation(summary = "Запрос на блокировку карты")
+    public ResponseEntity<BlockCardRequestInfo> post(
+            @RequestBody @Valid BlockCardRequestDto blockCardRequestDto
+    ) {
+        return ResponseEntity.ok(cardService.requestToBlockCard(blockCardRequestDto));
+    }
+
+    /**
+     * Получение списка запросов на блокировку
+     *
+     * @param page - страница
+     * @param size - размер страницы
+     * @return - список запросов
+     */
+    @GetMapping("/get-requests-to-block")
+    @Operation(summary = "Получение всех запросов на блокировку")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<BlockCardRequestInfo>> get(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(cardService.getAllRequests(PageRequest.of(page, size)));
     }
 
 }
