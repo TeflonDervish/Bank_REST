@@ -3,7 +3,6 @@ package com.example.bankcards.dto;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

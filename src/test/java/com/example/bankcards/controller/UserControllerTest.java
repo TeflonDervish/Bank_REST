@@ -4,7 +4,6 @@ import com.example.bankcards.dto.UserDto;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.enums.Role;
 import com.example.bankcards.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
