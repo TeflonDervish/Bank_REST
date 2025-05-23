@@ -1,8 +1,10 @@
 package com.example.bankcards.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.security.DenyAll;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,8 +15,10 @@ import java.math.BigDecimal;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "Перевод с одной карты на другую")
 public class ChangeAmountDto {
+
 
     @Schema(description = "Карта с который происходит перевод", defaultValue = "1234 1234 1234 1234")
     @Size(min = 19, max = 19, message = "Номер карты должен содержать 19 символов (вместе с пробелами)")

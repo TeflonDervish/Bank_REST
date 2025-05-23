@@ -142,6 +142,33 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Обработка всех ошибок
+     *
+     * @param e       - сообщение об ошибке
+     * @param request - запрос
+     * @param locale  - информация о местонахождении
+     * @return - возвращает информацию об ошибке
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
+            Exception e,
+            WebRequest request,
+            Locale locale) {
+        log.warn("Ошибка {}", e.getMessage());
+
+        Map<String, String> errors = getExceptionInfo(e);
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Ошибка",
+                request.getDescription(false).replace("uri=", ""),
+                errors
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Получение сообщения об ошибках
      *
      * @param e - сообщение об ошибке
