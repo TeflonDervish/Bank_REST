@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
+    public ResponseEntity<ErrorResponse> handleUserException(
             UserException e,
             WebRequest request,
             Locale locale) {
@@ -96,7 +96,7 @@ public class GlobalExceptionHandler {
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(CardException.class)
-    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
+    public ResponseEntity<ErrorResponse> handleCardException(
             CardException e,
             WebRequest request,
             Locale locale) {
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler {
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(BlockedRequestException.class)
-    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
+    public ResponseEntity<ErrorResponse> handleBlockedRequestException(
             BlockedRequestException e,
             WebRequest request,
             Locale locale) {
@@ -150,7 +150,7 @@ public class GlobalExceptionHandler {
      * @return - возвращает информацию об ошибке
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(
+    public ResponseEntity<ErrorResponse> handleException(
             Exception e,
             WebRequest request,
             Locale locale) {
